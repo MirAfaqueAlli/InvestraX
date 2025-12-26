@@ -6,11 +6,18 @@ import { Dataset } from "@mui/icons-material";
 
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
-  useEffect(() =>{
-    axios.get("http://localhost:3002/allHoldings").then((res)=>{
+  useEffect(() => {
+  axios
+    .get(`${import.meta.env.VITE_API_URL}/allHoldings`, {
+      withCredentials: true, // 🔐 send JWT cookie
+    })
+    .then((res) => {
       setAllHoldings(res.data);
     })
-  }, []);
+    .catch((err) => {
+      console.error("Failed to fetch holdings", err);
+    });
+}, []);
 
   const labels = allHoldings.map((subArr)=>subArr["name"]);
 

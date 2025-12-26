@@ -97,7 +97,7 @@ const WatchListActions = ({uid})=>{
         <Tooltip title="Analytics (A)" placement="top" arrow TransitionComponent={Grow}>
         <button className="action"><BarChartOutlined className="icon"/></button>
         </Tooltip>
-        <Tooltip title="Buy (B)" placement="top" arrow TransitionComponent={Grow}>
+        <Tooltip title="More" placement="top" arrow TransitionComponent={Grow}>
         <button className="action"><MoreHoriz className="icon"/></button>
         </Tooltip>
         
