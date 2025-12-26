@@ -16,6 +16,7 @@ const { PositionsModel } = require("./models/PositionsModel");
 const { OrdersModel } = require("./models/OrdersModel");
 const { UserModel } = require("./models/UserModel");
 const authMiddleware = require("./middlewares/AuthMiddleware");
+const guestMiddleware = require("./middlewares/GuestMiddleware");
 const app = express();
 
 app.use(bodyParser.json());
@@ -68,7 +69,7 @@ app.get("/me", authMiddleware, async (req, res) => {
 });
 
 
-app.post("/signup", async (req, res) => {
+app.post("/signup", guestMiddleware, async (req, res) => {
   try{
     const { name, email, mobile, password, pan, dob } = req.body; 
   const existingUser = await UserModel.findOne({ email: email });
@@ -113,7 +114,7 @@ app.post("/signup", async (req, res) => {
 }
 });
 
-app.post("/verify-otp", async (req, res) => {
+app.post("/verify-otp", guestMiddleware, async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -176,7 +177,7 @@ app.post("/verify-otp", async (req, res) => {
 });
 
 
-app.post("/login", async (req, res) => {
+app.post("/login", guestMiddleware, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -219,14 +220,20 @@ app.post("/login", async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    // 🍪 Send token as HTTP-only cookie
-    res.cookie("token", token, {
-  httpOnly: true,
-  secure: false,
-  sameSite: "lax",
-  domain: "localhost",   // ⭐ VERY IMPORTANT
-  maxAge: 24 * 60 * 60 * 1000,
-});
+    // 🍪 Send token as HTTP-only cookie (environment-aware options)
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    };
+
+    // In production you can specify COOKIE_DOMAIN in env; avoid "localhost" domain during dev
+    if (process.env.NODE_ENV === "production" && process.env.COOKIE_DOMAIN) {
+      cookieOptions.domain = process.env.COOKIE_DOMAIN;
+    }
+
+    res.cookie("token", token, cookieOptions);
 
 
     res.status(200).json({

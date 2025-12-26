@@ -1,10 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Link } from "react-router-dom";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [username, setUsername] = useState("USERID");
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/me`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success && data.user && data.user.name) {
+          const firstName = String(data.user.name).trim().split(" ")[0];
+          setUsername(firstName);
+        }
+      })
+      .catch(() => {
+        // ignore errors and keep default
+      });
+  }, []);
 
   const handleMenuClick = (index) => {
     setSelectedMenu(index);
@@ -91,8 +106,8 @@ const Menu = () => {
         </ul>
         <hr />
         <div className="profile" onClick={handleProfileClick}>
-          <div className="avatar">ZU</div>
-          <p className="username">USERID</p>
+          <div className="avatar">{(username || "U").slice(0,2).toUpperCase()}</div>
+          <p className="username">{username}</p>
         </div>
       </div>
     </div>
