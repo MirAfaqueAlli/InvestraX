@@ -240,7 +240,6 @@ app.post("/login", guestMiddleware, async (req, res) => {
       success: true,
       message: "Login successful",
     });
-
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({
@@ -250,6 +249,17 @@ app.post("/login", guestMiddleware, async (req, res) => {
   }
 });
 
+// Logout route — clears auth cookie
+app.post("/logout", (req, res) => {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  };
+
+  res.clearCookie("token", cookieOptions);
+  return res.status(200).json({ success: true, message: "Logged out" });
+});
 
 app.post("/newOrder", async (req, res) => {
   let newOrder = new OrdersModel({

@@ -6,14 +6,16 @@ const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [username, setUsername] = useState("USERID");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/me`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.success && data.user && data.user.name) {
-          const firstName = String(data.user.name).trim().split(" ")[0];
+        if (data && data.success && data.user) {
+          const firstName = String(data.user.name || "").trim().split(" ")[0] || "USER";
           setUsername(firstName);
+          setUser(data.user);
         }
       })
       .catch(() => {
@@ -109,6 +111,34 @@ const Menu = () => {
           <div className="avatar">{(username || "U").slice(0,2).toUpperCase()}</div>
           <p className="username">{username}</p>
         </div>
+
+        {/* Profile dropdown */}
+        {isProfileDropdownOpen && (
+          <div className="profile-dropdown">
+            <p className="pd-name">{user ? user.name : username}</p>
+            <p className="pd-email">{user ? user.email : ""}</p>
+            <p className="pd-mobile">{user ? user.mobile : ""}</p>
+            <hr />
+            <button
+              className="btn btn-link logout-btn"
+              onClick={async () => {
+                try {
+                  const res = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+                    method: "POST",
+                    credentials: "include",
+                  });
+                  // ignore body; on success redirect
+                  window.location.replace(import.meta.env.VITE_FRONTEND_URL);
+                } catch (err) {
+                  console.error("Logout failed", err);
+                  window.location.replace(import.meta.env.VITE_FRONTEND_URL);
+                }
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
