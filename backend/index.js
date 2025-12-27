@@ -249,9 +249,6 @@ app.post("/login", guestMiddleware, async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     };
 
-    if (process.env.NODE_ENV === "production" && process.env.COOKIE_DOMAIN) {
-      cookieOptions.domain = process.env.COOKIE_DOMAIN;
-    }
 
     res.cookie("token", token, cookieOptions);
 
