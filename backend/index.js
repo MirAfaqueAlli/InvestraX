@@ -58,7 +58,7 @@ app.get("/holdings", authMiddleware, async (req, res) => {
 const positionsRouter = require("./routes/Positions");
 app.use("/positions", positionsRouter);
 // Orders route
-const ordersRouter = require("./routes/orders");
+const ordersRouter = require("./routes/Orders");
 app.use("/orders", ordersRouter);
 
 // Dashboard route
