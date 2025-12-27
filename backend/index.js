@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const PORT = process.env.PORT || 3002;
 const url = process.env.MONGO_URL;
-const sendEmail = require("./utils/sendEmail");
+const sendEmail = require("./utils/SendEmail");
 const cookieParser = require("cookie-parser");
 
 const HoldingsModel = require("./models/HoldingsModel");
