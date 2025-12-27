@@ -12,12 +12,18 @@ const SellActionWindow = ({ uid }) => {
 
   const handleSellClick = async () => {
     try {
-      await axios.post("http://localhost:3002/newOrder", {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/newOrder`, {
         name: uid,
         qty: Number(stockQuantity),
         price: Number(stockPrice),
         mode: "SELL",
-      });
+      }, { withCredentials: true });
+
+      if (res && res.data && !res.data.success) {
+        alert(res.data.message || "Sell failed");
+      } else {
+        alert("Sell executed");
+      }
     } catch (err) {
       console.error("Sell order failed", err);
     }

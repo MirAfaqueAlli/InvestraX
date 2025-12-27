@@ -4,35 +4,47 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [authState, setAuthState] = useState("checking"); 
+  // checking | authenticated | unauthenticated
 
   useEffect(() => {
+    let isMounted = true;
+
     fetch(`${import.meta.env.VITE_API_URL}/me`, {
       credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
-        if (!data.success) {
-          // ❌ Not logged in → go back to frontend login
-          window.location.replace(
-            import.meta.env.VITE_FRONTEND_URL + "/login"
-          );
+        if (!isMounted) return;
+        if (data && data.success) {
+          setAuthState("authenticated");
         } else {
-          // ✅ Logged in → allow dashboard
-          setLoading(false);
+          setAuthState("unauthenticated");
         }
       })
       .catch(() => {
-        window.location.replace(
-          import.meta.env.VITE_FRONTEND_URL + "/login"
-        );
+        if (isMounted) setAuthState("unauthenticated");
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  if (loading) {
+  // 🔄 Still checking
+  if (authState === "checking") {
     return <h2>Checking authentication...</h2>;
   }
 
+  // ❌ Not logged in → redirect ONCE
+  if (authState === "unauthenticated") {
+    window.location.replace(
+      `${import.meta.env.VITE_FRONTEND_URL}/login`
+    );
+    return null;
+  }
+
+  // ✅ Logged in
   return (
     <Routes>
       <Route path="/*" element={<Home />} />

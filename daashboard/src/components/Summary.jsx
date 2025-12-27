@@ -1,6 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Summary = () => {
+  const [summary, setSummary] = useState(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/dashboard/summary`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success) setSummary(data.summary);
+        else setSummary({});
+      })
+      .catch(() => setSummary({}));
+  }, []);
+
+  if (!summary) return <div>Loading summary...</div>;
+
   return (
     <>
       <div className="username">
@@ -15,17 +29,17 @@ const Summary = () => {
 
         <div className="data">
           <div className="first">
-            <h3>3.74k</h3>
+            <h3>{summary.availableMargin?.toLocaleString() ?? "-"}</h3>
             <p>Margin available</p>
           </div>
           <hr />
 
           <div className="second">
             <p>
-              Margins used <span>0</span>{" "}
+              Margins used <span>{summary.usedMargin ?? 0}</span>
             </p>
             <p>
-              Opening balance <span>3.74k</span>{" "}
+              Opening balance <span>{summary.openingBalance ?? "-"}</span>
             </p>
           </div>
         </div>
@@ -34,13 +48,13 @@ const Summary = () => {
 
       <div className="section">
         <span>
-          <p>Holdings (13)</p>
+          <p>Holdings ({summary.holdingsCount ?? 0})</p>
         </span>
 
         <div className="data">
           <div className="first">
-            <h3 className="profit">
-              1.55k <small>+5.20%</small>{" "}
+            <h3 className={summary.pnl >= 0 ? "profit" : "loss"}>
+              {summary.pnl?.toLocaleString() ?? "-"} <small>{summary.pnl && summary.investment ? ("(" + ((summary.pnl / (summary.investment || 1)) * 100).toFixed(2) + "%)") : ""}</small>
             </h3>
             <p>P&L</p>
           </div>
@@ -48,10 +62,10 @@ const Summary = () => {
 
           <div className="second">
             <p>
-              Current Value <span>31.43k</span>{" "}
+              Current Value <span>{summary.currentValue?.toLocaleString() ?? "-"}</span>
             </p>
             <p>
-              Investment <span>29.88k</span>{" "}
+              Investment <span>{summary.investment?.toLocaleString() ?? "-"}</span>
             </p>
           </div>
         </div>

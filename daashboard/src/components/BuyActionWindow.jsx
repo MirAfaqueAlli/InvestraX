@@ -12,12 +12,18 @@ const BuyActionWindow = ({ uid }) => {
 
   const handleBuyClick = async () => {
     try {
-      await axios.post("http://localhost:3002/newOrder", {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/newOrder`, {
         name: uid,
         qty: Number(stockQuantity),
         price: Number(stockPrice),
         mode: "BUY",
-      });
+      }, { withCredentials: true });
+
+      if (res && res.data && !res.data.success) {
+        alert(res.data.message || "Buy failed");
+      } else {
+        alert("Buy executed");
+      }
     } catch (err) {
       console.error("Buy order failed", err);
     }

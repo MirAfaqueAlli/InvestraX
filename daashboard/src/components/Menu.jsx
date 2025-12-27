@@ -13,7 +13,10 @@ const Menu = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data && data.success && data.user) {
-          const firstName = String(data.user.name || "").trim().split(" ")[0] || "USER";
+          const firstName =
+            String(data.user.name || "")
+              .trim()
+              .split(" ")[0] || "USER";
           setUsername(firstName);
           setUser(data.user);
         }
@@ -39,6 +42,16 @@ const Menu = () => {
       <img src="logo.png" style={{ width: "40px" }} />
       <div className="menus">
         <ul>
+          <li>
+            <a
+              style={{ textDecoration: "none", cursor: "pointer" }}
+              onClick={() => {
+                window.location.href = import.meta.env.VITE_FRONTEND_URL;
+              }}
+            >
+              <p className={menuClass}>Home</p>
+            </a>
+          </li>
           <li>
             <Link
               style={{ textDecoration: "none" }}
@@ -86,7 +99,7 @@ const Menu = () => {
           <li>
             <Link
               style={{ textDecoration: "none" }}
-              to="funds"
+              to="/funds"
               onClick={() => handleMenuClick(4)}
             >
               <p className={selectedMenu === 4 ? activeMenuClass : menuClass}>
@@ -94,21 +107,12 @@ const Menu = () => {
               </p>
             </Link>
           </li>
-          <li>
-            <Link
-              style={{ textDecoration: "none" }}
-              to="/apps"
-              onClick={() => handleMenuClick(6)}
-            >
-              <p className={selectedMenu === 6 ? activeMenuClass : menuClass}>
-                Apps
-              </p>
-            </Link>
-          </li>
         </ul>
         <hr />
         <div className="profile" onClick={handleProfileClick}>
-          <div className="avatar">{(username || "U").slice(0,2).toUpperCase()}</div>
+          <div className="avatar">
+            {(username || "U").slice(0, 2).toUpperCase()}
+          </div>
           <p className="username">{username}</p>
         </div>
 
@@ -123,10 +127,13 @@ const Menu = () => {
               className="btn btn-link logout-btn"
               onClick={async () => {
                 try {
-                  const res = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
-                    method: "POST",
-                    credentials: "include",
-                  });
+                  const res = await fetch(
+                    `${import.meta.env.VITE_API_URL}/logout`,
+                    {
+                      method: "POST",
+                      credentials: "include",
+                    }
+                  );
                   // ignore body; on success redirect
                   window.location.replace(import.meta.env.VITE_FRONTEND_URL);
                 } catch (err) {

@@ -2,6 +2,18 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Funds = () => {
+  const [summary, setSummary] = React.useState(null);
+
+  React.useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/dashboard/summary`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.success) setSummary(data.summary);
+        else setSummary({});
+      })
+      .catch(() => setSummary({}));
+  }, []);
+
   return (
     <>
       <div className="funds">
@@ -19,28 +31,24 @@ const Funds = () => {
           <div className="table">
             <div className="data">
               <p>Available margin</p>
-              <p className="imp colored">4,043.10</p>
+              <p className="imp colored">{summary?.availableMargin?.toLocaleString() ?? "-"}</p>
             </div>
             <div className="data">
               <p>Used margin</p>
-              <p className="imp">3,757.30</p>
+              <p className="imp">{summary?.usedMargin ?? 0}</p>
             </div>
             <div className="data">
               <p>Available cash</p>
-              <p className="imp">4,043.10</p>
+              <p className="imp">{summary?.availableMargin?.toLocaleString() ?? "-"}</p>
             </div>
             <hr />
             <div className="data">
               <p>Opening Balance</p>
-              <p>4,043.10</p>
-            </div>
-            <div className="data">
-              <p>Opening Balance</p>
-              <p>3736.40</p>
+              <p>{summary?.openingBalance ?? "-"}</p>
             </div>
             <div className="data">
               <p>Payin</p>
-              <p>4064.00</p>
+              <p>0.00</p>
             </div>
             <div className="data">
               <p>SPAN</p>

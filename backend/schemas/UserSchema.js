@@ -35,14 +35,19 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    balance: {
+      type: Number,
+      default: 100000, // default seed balance for dev/testing
+    },
     otp: String,
-otpExpiry: Date
+    otpExpiry: Date,
   },
   { timestamps: true }
 );
+
 UserSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-module.exports = UserSchema
+module.exports = {UserSchema};
